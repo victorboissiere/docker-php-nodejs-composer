@@ -1,10 +1,8 @@
 FROM php:7.2-fpm-alpine3.6
 
 # Install main php extensions
-RUN apt-get update \
-    && apt-get -y --no-install-recommends install php7.2-memcached php7.w-mysql php7.2-imagick php7.2-mbstring php7.2-gd php7.2-bcmath \
-    && apt-get -y --no-install-recommends install cron \
-    && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+RUN apk --update add curl && docker-php-ext-install mbstring
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
 # Install Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
@@ -12,15 +10,13 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php \
     && php -r "unlink('composer-setup.php');"
 
-# Install NodeJS
-RUN apt-get install --yes curl
-RUN curl --silent --location https://deb.nodesource.com/setup_6.x | bash -
-RUN apt-get install --yes nodejs
-RUN apt-get install --yes build-essential
+# Install NodeJS and yarn
+RUN apk add nodejs
+RUN echo -e 'http://dl-cdn.alpinelinux.org/alpine/edge/main\nhttp://dl-cdn.alpinelinux.org/alpine/edge/community\nhttp://dl-cdn.alpinelinux.org/alpine/edge/testing' > /etc/apk/repositories && \
+apk add --no-cache yarn
 
-# Install Yarn
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-    && echo "deb https://dl.yarnpkg.com/debian/ stable main" |  tee /etc/apt/sources.list.d/yarn.list \
-    && apt-get update && apt-get -y install yarn
 
+RUN php --version
+RUN node --version
+RUN yarn --version
 
