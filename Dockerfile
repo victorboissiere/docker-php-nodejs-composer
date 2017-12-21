@@ -1,7 +1,7 @@
 FROM php:7.2-fpm-alpine3.6
 
 # Install main php extensions
-RUN apk --update add curl && docker-php-ext-install mbstring
+RUN apk --update add curl && docker-php-ext-install mbstring pdo_mysql
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
 # Install Composer
